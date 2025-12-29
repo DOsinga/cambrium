@@ -110,7 +110,7 @@ export class Animal extends Creature {
     constructor(world, x, y, genome) {
         super(world, x, y)
         this.genome = genome
-        this.energy = 1250
+        this.energy = this.genome.maxEnergy / 2
 
         this.noiseCountdown = 0
         this.savedNet = null

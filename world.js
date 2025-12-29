@@ -14,7 +14,7 @@ export const SETTINGS = {
   maxFood: 5000,
   livingCost: 0.30,
   baseCreatureCost: 0.08,
-  radiusCost: 0.005,
+  radiusCost: 0.035,
   partsCost: 0.15
 }
 
