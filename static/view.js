@@ -19,6 +19,7 @@ export class View {
 
         this.running = false
         this.paused = false
+        this.showSplash = true
         this.lastT = 0
         this.accumulator = 0
 
@@ -35,6 +36,18 @@ export class View {
         this.fpsTime = 0
 
         this.drag = {active: false, x: 0, y: 0}
+
+        // Load logo for splash screen
+        if (opts.logoUrl) {
+            this.logo = new Image()
+            this.logo.src = opts.logoUrl
+        }
+
+        // Auto-dismiss splash after 3 seconds
+        setTimeout(() => {
+            this.showSplash = false
+        }, 3000)
+
         this.infoPanel = this.createInfoPanel(this.canvas)
 
         this.installControls()
@@ -376,6 +389,10 @@ export class View {
         }, {passive: false})
 
         canvas.addEventListener("click", (e) => {
+            if (this.showSplash) {
+                this.showSplash = false
+                return
+            }
             const p = this.eventToScreen(e.clientX, e.clientY)
             const c = this.pickCreatureAtScreen(p.x, p.y)
             if (c) {
@@ -386,6 +403,10 @@ export class View {
         })
 
         window.addEventListener("keydown", (e) => {
+            if (this.showSplash) {
+                this.showSplash = false
+                return
+            }
             if (e.key === " ") {
                 this.paused = !this.paused
             }
@@ -436,11 +457,77 @@ export class View {
         })
     }
 
+    drawSplash() {
+        const ctx = this.ctx
+        const dpr = this.getDpr()
+        const w = this.width
+        const h = this.height
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+        // Dark background
+        ctx.fillStyle = "#0a0a0a"
+        ctx.fillRect(0, 0, w, h)
+
+        // Draw logo if loaded
+        if (this.logo && this.logo.complete && this.logo.naturalWidth > 0) {
+            const logoScale = Math.min(w * 0.35 / this.logo.naturalWidth, h * 0.25 / this.logo.naturalHeight)
+            const logoW = this.logo.naturalWidth * logoScale
+            const logoH = this.logo.naturalHeight * logoScale
+            const logoX = (w - logoW) / 2
+            const logoY = h * 0.08
+            ctx.drawImage(this.logo, logoX, logoY, logoW, logoH)
+        }
+
+        // Title
+        ctx.fillStyle = "#ffffff"
+        ctx.font = `bold ${48 * dpr}px Georgia, serif`
+        ctx.textAlign = "center"
+        ctx.fillText("Cambrium", w / 2, h * 0.42)
+
+        // Subtitle
+        ctx.font = `${18 * dpr}px Georgia, serif`
+        ctx.fillStyle = "#aaaaaa"
+        ctx.fillText("Evolving Creatures with Neural Networks", w / 2, h * 0.50)
+
+        // Description
+        ctx.font = `${14 * dpr}px Georgia, serif`
+        ctx.fillStyle = "#888888"
+        ctx.fillText("Bodies, eyes, mouths and tails - all evolving", w / 2, h * 0.58)
+
+        // Controls
+        ctx.font = `${13 * dpr}px monospace`
+        ctx.fillStyle = "#666666"
+        const controls = [
+            "Drag to pan • Scroll to zoom • Click creature to follow",
+            "Space: Pause  |  R: Reset view  |  F: Fullscreen",
+            "W/A/S/D: Control selected creature",
+        ]
+        controls.forEach((line, i) => {
+            ctx.fillText(line, w / 2, h * 0.70 + i * 20 * dpr)
+        })
+
+        // Start prompt
+        ctx.font = `${16 * dpr}px monospace`
+        ctx.fillStyle = "#ffffff"
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 300)
+        ctx.globalAlpha = 0.5 + 0.5 * pulse
+        ctx.fillText("Click or press any key to start", w / 2, h * 0.88)
+        ctx.globalAlpha = 1
+        ctx.textAlign = "left"
+    }
+
     draw() {
         const ctx = this.ctx
         const dpr = this.getDpr()
 
         ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+        // Show splash screen
+        if (this.showSplash) {
+            this.drawSplash()
+            return
+        }
 
         if (this.clearBackground) {
             ctx.clearRect(0, 0, this.width, this.height)

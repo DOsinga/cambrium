@@ -1,0 +1,38 @@
+<script type="text/markdown" id="info">
+name: Cambrium
+description: Alife simulation of a creatures with various shapes, body parts and run by a neural network.
+type: alife
+github: cambrium
+files:
+  - [cambrium.zip, "Original implementation in Delphi/Windows"]
+</script>
+
+<p>
+      Third version of Cambrium, now in js. Creatures have bodies made out segments and can be mirrored
+      over their axis and over rotation. Mouths, Tails and Eyes are placed randomly and are connected
+      through a neural network that evolves using evolution but with a short cut.
+  </p>
+  <p>
+    <strong>Controls:</strong>
+    Drag to pan • Scroll to zoom • Click creature to follow • Space to pause • R to reset view • F for fullscreen
+  </p>
+
+
+<canvas id="canvas"></canvas>
+
+<script type="module">
+  import { World } from "{{ static }}world.js"
+  import { View } from "{{ static }}view.js"
+
+  const canvas = document.getElementById("canvas")
+  const world = new World({ food: 300, creatures: 12 })
+  const logoUrl = "{{ static }}logo.png"
+  const view = new View(canvas, world, { keepScaleOnResize: true, initialZoom: 0.35, logoUrl })
+
+  const resizeCanvas = () => view.resize()
+
+  resizeCanvas()
+  window.addEventListener("resize", resizeCanvas)
+
+  view.start()
+</script>
