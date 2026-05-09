@@ -2,6 +2,8 @@
 
 An artificial life simulation where creatures evolve to hunt for food. Creatures have bodies with eyes, mouths, and engines, connected by neural networks that learn during their lifetime.
 
+![Cambrium](cambrium.gif)
+
 ## [Live Demo](https://douwe.com/projects/cambrium)
 
 ## Features
